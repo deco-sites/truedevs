@@ -12,7 +12,7 @@ interface Props {
   loading?: "eager" | "lazy";
 }
 
-function Modal(props: Props): ComponentChildren {
+function Modal(props: Props) {
   const {
     children,
     open,
