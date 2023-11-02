@@ -1,7 +1,7 @@
 import Component from "$store/components/AssistentChat/index.tsx";
-import type { Props } from "$store/components/AssistentChat/index.tsx";
+import type { AssistentChatProps } from "$store/components/AssistentChat/index.tsx";
 
-function Island(props: Props) {
+function Island(props: AssistentChatProps) {
   return <Component {...props} />;
 }
 

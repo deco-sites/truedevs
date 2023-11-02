@@ -18,7 +18,7 @@ function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
           <input 
             type="text"
             value={valueInput.value}
-            onChange={({target}) => valueInput.value = target.value}
+            onChange={({target}) => {valueInput.value = target.value}}
             class="border bg-white text-[#181812] flex-shrink-[1] w-full"
             placeholder="Digite sua pergunta..."
           />
@@ -36,6 +36,7 @@ function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
 
 export default function Chat({ textInitial, apiKey, schemaMessage }: AssistentChatProps) {
   const openModal = useSignal(false)
+  console.log(textInitial, schemaMessage)
   return (
     <>
       <button onClick={() => openModal.value = true}>
