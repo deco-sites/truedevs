@@ -33,7 +33,7 @@ const actionMessageChat = async (
     })
   })
 
-  return completion.json());
+  return completion.json();
 }
   
 export default actionMessageChat;

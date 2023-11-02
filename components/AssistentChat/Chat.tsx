@@ -1,13 +1,13 @@
 import { useSignal } from "@preact/signals";
-import Modal from "../ui/Modal";
-import actionMessageChat from "../../actions/MessageChat";
-import { AssistentChatProps } from ".";
+import Modal from "$store/components/ui/Modal.tsx";
+import actionMessageChat from "$store/actions/MessageChat.ts";
+import { AssistentChatProps } from "./index.tsx";
 
-export function ModalChat({ open, apiKey }) {
+function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
   const valueInput = useSignal('')
   return (
     <Modal
-      onClose={() => open = false}
+      onClose={() => {open = false}}
       open={open}
     >
       <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px]">

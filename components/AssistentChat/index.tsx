@@ -1,4 +1,4 @@
-import Chat from "./Chat";
+import Chat from "$store/components/AssistentChat/Chat.tsx";
 
 export interface AssistentChatProps {
   textInitial: string;
