@@ -9,8 +9,9 @@ function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
     <Modal
       onClose={() => {open = false}}
       open={open}
+      class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99]">
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4">
         <div class="bg-[#f2f2f2]">
 
         </div>
