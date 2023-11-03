@@ -20,12 +20,12 @@ const doFetch = async (
   { __resolveType, ...extraProps }: Resolved<Suggestion | null> = NULLABLE,
 ) => {
   // Debounce query to API speed
-  console.log("doFetch", query, latestQuery)
   if (latestQuery !== query) return;
 
   try {
     // Figure out a better way to type this loader
     // deno-lint-ignore no-explicit-any
+    console.log(__resolveType, extraProps, query)
     const invokePayload: any = {
       key: __resolveType,
       props: { query, ...extraProps },
