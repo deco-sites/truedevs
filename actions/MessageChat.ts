@@ -30,48 +30,60 @@ const messages: Message[] = [
 const actionMessageChat = async (
   { userMessage, apiKey }: Props,
 ): Promise<Message[]> => {
-  const url = "https://api.openai.com/v1/chat/completions";
-  const bearer = 'Bearer ' + apiKey;
-
-  messages.push({
-    "role": "user",
-    "content": userMessage,
-  })
-
-  const functions = [{
-    "name": "get_products_recommendation",
-    "description": "obtém informações sobre o produto que o cliente está interessado",
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "query": {
-          "type": "string",
-          "description": "Query detalhada do cliente para recomendação de produtos"
-        },
-      }
-    },
-  }]
-
-  const completion = await fetch(url, {
-    method: 'POST',
-    headers: {
-        'Authorization': bearer,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "model": "gpt-3.5-turbo",
-      "messages": messages.map(({role, content}) => ({ role, content }))
-      // "functions": functions,
+  try {
+    const url = "https://api.openai.com/v1/chat/completions";
+    const bearer = 'Bearer ' + apiKey;
+  
+    messages.push({
+      "role": "user",
+      "content": userMessage,
     })
-  })
+  
+    const functions = [{
+      "name": "get_products_recommendation",
+      "description": "obtém informações sobre o produto que o cliente está interessado",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Query detalhada do cliente para recomendação de produtos"
+          },
+        }
+      },
+    }]
+  
+    const completion = await fetch(url, {
+      method: 'POST',
+      headers: {
+          'Authorization': bearer,
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "model": "gpt-3.5-turbo",
+        "messages": messages.map(({role, content}) => ({ role, content })),
+        "functions": functions,
+      })
+    })
+    
 
-  const completionJson = await completion.json()
 
-  const newMessage: Message = completionJson.choices[0].message
+  
+    const completionJson = await completion.json()    
 
-  messages.push(newMessage)
-
-  return messages
+    if (completionJson.function_call) {
+      const functionArgs = JSON.parse(completionJson.function_call.arguments);
+      console.log(functionArgs);
+    }
+  
+    const newMessage: Message = completionJson.choices[0].message
+  
+    messages.push(newMessage)
+  
+    return messages
+  } catch (error) {
+    console.log(error)
+  }
 }
   
 export default actionMessageChat;

@@ -16,7 +16,7 @@ function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
 
   async function handleSendMessage() {
     const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey })
-    setMessages(response)  
+    setMessages([...response])  
   }
 
   useEffect(() => {
