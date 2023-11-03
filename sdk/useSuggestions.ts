@@ -20,6 +20,7 @@ const doFetch = async (
   { __resolveType, ...extraProps }: Resolved<Suggestion | null> = NULLABLE,
 ) => {
   // Debounce query to API speed
+  console.log("doFetch", query, latestQuery)
   if (latestQuery !== query) return;
 
   try {
@@ -30,6 +31,7 @@ const doFetch = async (
       props: { query, ...extraProps },
     };
     payload.value = await invoke(invokePayload) as Suggestion | null;
+    console.log("payload", payload.value)
   } catch (error) {
     console.error(
       "Something went wrong while fetching suggestions \n",

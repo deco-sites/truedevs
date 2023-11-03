@@ -7,7 +7,7 @@ import Spinner from "deco-sites/truedevs/components/ui/Spinner.tsx";
 import { Suggestion } from "apps/commerce/types.ts";
 import { useSuggestions } from "$store/sdk/useSuggestions.ts";
 import { Resolved } from "deco/engine/core/resolver.ts";
-import { sendEvent } from "$store/sdk/analytics.tsx";
+// import { sendEvent } from "$store/sdk/analytics.tsx";
 import Icon from "deco-sites/truedevs/components/ui/Icon.tsx";
 
 export interface Message {
@@ -24,6 +24,7 @@ export interface ModalChatProps {
 
 function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const valueInput = useSignal('')
+  const query = useSignal('')
   const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
   
@@ -32,26 +33,30 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const hasProducts = Boolean(products.length); {/* PRODUTOS ACHADOS */}
   const hasTerms = Boolean(searches.length); {/* TERMOS SEMELHANTES */}
   {/* FUNÇÃO QUE EXECUTA O INTELLISENSE SEARCH */}
-  {/* if (value) {
-    sendEvent({
-      name: "search",
-      params: { search_term: value },
-    });
-  }
+  // if (query.value) {
+  //   sendEvent({
+  //     name: "search",
+  //     params: { search_term: value },
+  //   });
+  // }
   
-  setQuery(value); */}
+  // setQuery(value); 
 
   async function handleSendMessage() {
     isLoading.value = true
-    const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey })
+    const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
     setMessages([...response])
     valueInput.value = ''
     isLoading.value = false
   }
 
   useEffect(() => {
-    console.log(messages)
-  }, [messages])
+    if(query.value) {
+      setQuery(query.value)
+    }
+  }, [query.value])
+
+  useEffect(() => {console.log(products)}, [payload.value])
 
   return (
     <Modal

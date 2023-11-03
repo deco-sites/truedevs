@@ -3,6 +3,7 @@ import { Message } from "$store/components/AssistentChat/Chat.tsx";
 export interface Props {
   userMessage: string
   apiKey: string
+  setQuery: (query: string) => void
 }
 
 const messages: Message[] = [
@@ -24,8 +25,8 @@ const messages: Message[] = [
 ]
   
 const actionMessageChat = async (
-  { userMessage, apiKey }: Props,
-): Promise<Message[]> => {
+  { userMessage, apiKey, setQuery }: Props,
+): Promise<Message[] | null> => {
   try {
     const url = "https://api.openai.com/v1/chat/completions";
     const bearer = 'Bearer ' + apiKey;
@@ -61,24 +62,24 @@ const actionMessageChat = async (
         "functions": functions,
       })
     })
-    
-
 
   
     const completionJson = await completion.json()    
+    const choice = completionJson.choices[0]
 
-    if (completionJson.function_call) {
-      const functionArgs = JSON.parse(completionJson.function_call.arguments);
-      console.log(functionArgs);
+    if (choice.finish_reason === 'function_call') {
+      const functionArgs = JSON.parse(choice.message.function_call.arguments);
+      setQuery(functionArgs.query)
     }
   
     const newMessage: Message = completionJson.choices[0].message
   
     messages.push(newMessage)
-  
+
     return messages
   } catch (error) {
     console.log(error)
+    return null
   }
 }
   
