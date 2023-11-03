@@ -31,6 +31,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const query = useSignal('')
   const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const [currentMessage, setCurrentMessage] = useState<string>('')
   
   const { setQuery, payload, loading } = useSuggestions(loader);
   const { products = [], searches = [] } = payload.value ?? {};
@@ -48,12 +49,9 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
 
   async function handleSendMessage() {
     isLoading.value = true
-    const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
-    if(response){
-      setMessages([...response])
-      valueInput.value = ''
-      isLoading.value = false
-    }
+    await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages })
+    valueInput.value = ''
+    isLoading.value = false
   }
 
   useEffect(() => {
@@ -62,7 +60,8 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     }
   }, [query.value])
 
-  useEffect(() => {console.log(products)}, [payload.value])
+  useEffect(() => {console.log(currentMessage)}, [currentMessage])
+  useEffect(() => {console.log(messages)}, [messages])
 
   return (
     <Modal

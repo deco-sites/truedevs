@@ -4,6 +4,8 @@ export interface Props {
   userMessage: string
   apiKey: string
   setQuery: (query: string) => void
+  setCurrentMessage: (partialMessage: string) => void
+  setMessages: (messages: Message[]) => void
 }
 
 const messages: Message[] = [
@@ -25,7 +27,7 @@ const messages: Message[] = [
 ]
   
 const actionMessageChat = async (
-  { userMessage, apiKey, setQuery }: Props,
+  { userMessage, apiKey, setQuery, setCurrentMessage, setMessages }: Props,
 ): Promise<Message[] | null> => {
   try {
     const url = "https://api.openai.com/v1/chat/completions";
@@ -49,8 +51,9 @@ const actionMessageChat = async (
         }
       },
     }]
-  
-    const completion = await fetch(url, {
+    
+    let txtReceived = ''
+    await fetch(url, {
       method: 'POST',
       headers: {
           'Authorization': bearer,
@@ -60,23 +63,50 @@ const actionMessageChat = async (
         "model": "gpt-3.5-turbo",
         "messages": messages.map(({role, content}) => ({ role, content })),
         "functions": functions,
+        "stream": true
       })
+    }).then((response) => {
+      const reader = response.body.getReader();
+      // read() returns a promise that resolves when a value has been received
+      reader.read().then(function pump({ done, value }) {
+        if (done) {
+          // Do something with last chunk of data then exit reader
+          setCurrentMessage('')  
+          messages.push({role: 'assistent', content: txtReceived})
+          setMessages([...messages])        
+          return;
+        }
+        // Otherwise do something here to process current chunk
+        const decoder = new TextDecoder();
+        const data = decoder.decode(value)
+        const lstData = data.split('\n\n');
+  
+        lstData.forEach((data) => {
+          try{
+            const json = JSON.parse(data.replace('data: ', ''));
+            if(json['choices'][0]['delta']['content']){
+              const txt = json['choices'][0]['delta']['content'];
+              txtReceived += txt;
+              setCurrentMessage(txtReceived)  
+            }
+          }catch(e){}
+        })
+        // Read some more, and call this function again
+        return reader.read().then(pump);
+      });
     })
+    .catch((err) => console.error(err));
 
   
-    const completionJson = await completion.json()    
-    const choice = completionJson.choices[0]
+    // const completionJson = await completion.json()    
+    // const choice = completionJson.choices[0]
 
-    if (choice.finish_reason === 'function_call') {
-      const functionArgs = JSON.parse(choice.message.function_call.arguments);
-      setQuery(functionArgs.query)
-    }
+    // if (choice.finish_reason === 'function_call') {
+    //   const functionArgs = JSON.parse(choice.message.function_call.arguments);
+    //   setQuery(functionArgs.query)
+    // }
   
-    const newMessage: Message = completionJson.choices[0].message
-  
-    messages.push(newMessage)
-
-    return messages
+    // const newMessage: Message = completionJson.choices[0].message
   } catch (error) {
     console.log(error)
     return null
