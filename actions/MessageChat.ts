@@ -1,4 +1,5 @@
 import { Message } from "$store/components/AssistentChat/Chat.tsx";
+import { useSignal } from "@preact/signals";
 
 export interface Props {
   userMessage: string
@@ -9,7 +10,7 @@ export interface Props {
 //   event_uuid: string
 // }
 
-const messages: Message[] = [
+const DEFAULT_MESSAGE: Message[] = [
   {
     "role": "system",
     "content": "Você é um assistente que vai ajudar meu cliente a escolher um produto na minha loja online fashion.com Você não pode recomendar produtos de outras lojas.Minha loja é de roupas. Inicie dando boas vindas e oferecendo ajuda ao cliente.",
@@ -30,10 +31,11 @@ const messages: Message[] = [
 const actionMessageChat = async (
   { userMessage, apiKey }: Props,
 ): Promise<Message[]> => {
+  const messages = useSignal(DEFAULT_MESSAGE)
   const url = "https://api.openai.com/v1/chat/completions";
   const bearer = 'Bearer ' + apiKey;
 
-  messages.push({
+  messages.value.push({
     "role": "user",
     "content": userMessage,
   })
@@ -60,7 +62,7 @@ const actionMessageChat = async (
     },
     body: JSON.stringify({
       "model": "gpt-3.5-turbo",
-      "messages": messages.map(({role, content}) => ({ role, content }))
+      "messages": messages.value.map(({role, content}) => ({ role, content }))
       // "functions": functions,
     })
   })
@@ -69,9 +71,9 @@ const actionMessageChat = async (
 
   const newMessage: Message = completionJson.choices[0].message
 
-  messages.push(newMessage)
+  messages.value.push(newMessage)
 
-  return messages
+  return messages.value
 }
   
 export default actionMessageChat;
