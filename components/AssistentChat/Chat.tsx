@@ -60,15 +60,6 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const { products = [], searches = [] } = payload.value ?? {};
   const hasProducts = Boolean(products.length); {/* PRODUTOS ACHADOS */}
   const hasTerms = Boolean(searches.length); {/* TERMOS SEMELHANTES */}
-  {/* FUNÇÃO QUE EXECUTA O INTELLISENSE SEARCH */}
-  // if (query.value) {
-  //   sendEvent({
-  //     name: "search",
-  //     params: { search_term: value },
-  //   });
-  // }
-  
-  // setQuery(value); 
 
   async function handleSendMessage() {
     isLoading.value = true
