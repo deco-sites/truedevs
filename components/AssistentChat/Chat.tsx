@@ -7,6 +7,12 @@ import { Suggestion } from "apps/commerce/types.ts";
 import { useSuggestions } from "$store/sdk/useSuggestions.ts";
 import { Resolved } from "deco/engine/core/resolver.ts";
 import Icon from "deco-sites/truedevs/components/ui/Icon.tsx";
+import { asset } from "$fresh/runtime.ts";
+import Slider from "$store/components/ui/Slider.tsx";
+import type { Product } from "apps/commerce/types.ts";
+import ProductCard, {
+  Layout as cardLayout,
+} from "$store/components/product/ProductCard.tsx";
 
 export interface Message {
   role: string
@@ -24,7 +30,25 @@ export interface ChatProps {
 
 interface ModalChatProps extends ChatProps {
   open: boolean
-} 
+}
+
+function CarouselProducts(products: Product[]) {
+  return (
+    <Slider class="carousel">
+      {products.map((product, index: number) => (
+        <Slider.Item
+          index={index}
+          class="carousel-item first:ml-4 last:mr-4 min-w-[200px] max-w-[200px]"
+        >
+          <ProductCard
+            product={product}
+            index={index}
+          />
+        </Slider.Item>
+      ))}
+    </Slider>
+  )
+}
 
 function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const valueInput = useSignal('')
@@ -70,10 +94,12 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       open={open}
       class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
-        <div class="bg-[#f2f2f2]">
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
+        <div class="bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
           {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
-            <li>{message.role}: {message.content}</li>
+            <li 
+              style={{ listStyleImage: `url(${asset("/sprites.svg#MessageIcon")})` }}
+            >{message.content.length !== 0 ? `${message.role}: ${message.content}` : products.length > 0 ? CarouselProducts(products) : ''}</li>
           ))}
         </div>
         <div class="flex w-full">
@@ -81,14 +107,14 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
             type="text"
             value={valueInput.value}
             onChange={({currentTarget}) => {valueInput.value = currentTarget!.value}}
-            class="border bg-white text-[#181812] flex-shrink-[1] w-full"
+            class="border bg-white text-[#181812] flex-shrink-[1] w-full pl-2 outline-none"
             placeholder="Digite sua pergunta..."
           />
           <button
             class="bg-[#00008B] text-white font-bold py-4 px-6 flex-shrink-[2] w-full" 
             onClick={handleSendMessage}
           >
-            { isLoading.value === true ? <Spinner size={30} /> : 'Enviar'}
+            { isLoading.value === true ? <Spinner size={20} /> : 'Enviar'}
           </button>
         </div>
       </div>

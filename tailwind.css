@@ -13,6 +13,10 @@
     @apply bg-accent text-accent-content;
   }
 
+  .modalChat {
+    min-height: calc(100vh - 56px);
+  }
+
   /** Remove default styles from input[type=number] */
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button {
