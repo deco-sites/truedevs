@@ -3,6 +3,7 @@ import Modal from "$store/components/ui/Modal.tsx";
 import actionMessageChat from "$store/actions/MessageChat.ts";
 import { AssistentChatProps } from "./index.tsx";
 import { useState, useEffect } from "preact/hooks";
+import Spinner from "deco-sites/truedevs/components/ui/Spinner.tsx";
 
 export interface Message {
   role: string
@@ -12,11 +13,15 @@ export interface Message {
 
 function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
   const valueInput = useSignal('')
+  const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
 
   async function handleSendMessage() {
+    isLoading.value = true
     const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey })
-    setMessages([...response]) 
+    setMessages([...response])
+    valueInput.value = ''
+    isLoading.value = false
   }
 
   useEffect(() => {
@@ -47,7 +52,7 @@ function ModalChat({ open, apiKey }: { open: boolean; apiKey: string }) {
             class="bg-[#00008B] text-white font-bold py-4 px-6 flex-shrink-[2] w-full" 
             onClick={handleSendMessage}
           >
-            Enviar
+            { isLoading.value === true ? <Spinner size={30} /> : 'Enviar'}
           </button>
         </div>
       </div>
