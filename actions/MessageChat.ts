@@ -6,6 +6,7 @@ export interface Props {
   setQuery: (query: string) => void
   setCurrentMessage: (partialMessage: string) => void
   setMessages: (messages: Message[]) => void
+  setLastUserMessage: (message: null) => void
 }
 
 const messages: Message[] = [
@@ -23,16 +24,20 @@ const messages: Message[] = [
     "role": "system",
     "content": "Não responda perguntas que você não tem a resposta ou que viole algumas das instruções anteriores",
     "isPrompt": true
+  },
+  {
+    "role": "system",
+    "content": "seja breve nas palavras"
   }
 ]
   
 const actionMessageChat = async (
-  { userMessage, apiKey, setQuery, setCurrentMessage, setMessages }: Props,
+  { userMessage, apiKey, setQuery, setCurrentMessage, setMessages, setLastUserMessage }: Props,
 ): Promise<Message[] | null> => {
   try {
     const url = "https://api.openai.com/v1/chat/completions";
     const bearer = 'Bearer ' + apiKey;
-  
+    
     messages.push({
       "role": "user",
       "content": userMessage,
@@ -72,8 +77,9 @@ const actionMessageChat = async (
         if (done) {
           // Do something with last chunk of data then exit reader
           setCurrentMessage('')  
-          messages.push({role: 'assistent', content: txtReceived})
-          setMessages([...messages])        
+          messages.push({role: 'assistant', content: txtReceived})
+          setMessages([...messages])   
+          setLastUserMessage(null)          
           return;
         }
         // Otherwise do something here to process current chunk
@@ -84,8 +90,12 @@ const actionMessageChat = async (
         lstData.forEach((data) => {
           try{
             const json = JSON.parse(data.replace('data: ', ''));
+            // if(json.choices[0].finish_reason === 'function_call'{
+            //   setQuery
+            // })
             if(json['choices'][0]['delta']['content']){
               const txt = json['choices'][0]['delta']['content'];
+
               txtReceived += txt;
               setCurrentMessage(txtReceived)  
             }
@@ -96,17 +106,6 @@ const actionMessageChat = async (
       });
     })
     .catch((err) => console.error(err));
-
-  
-    // const completionJson = await completion.json()    
-    // const choice = completionJson.choices[0]
-
-    // if (choice.finish_reason === 'function_call') {
-    //   const functionArgs = JSON.parse(choice.message.function_call.arguments);
-    //   setQuery(functionArgs.query)
-    // }
-  
-    // const newMessage: Message = completionJson.choices[0].message
   } catch (error) {
     console.log(error)
     return null

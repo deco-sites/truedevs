@@ -73,11 +73,12 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   // setQuery(value); 
 
   async function handleSendMessage() {
-    setLastUserMessage(valueInput.value)
+    const currentlastUserMessage = valueInput.value
+    setLastUserMessage(currentlastUserMessage)
     isLoading.value = true
-    await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages })
     valueInput.value = ''
     isLoading.value = false
+    await actionMessageChat({ userMessage: currentlastUserMessage , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages, setLastUserMessage })
   }
 
   useEffect(() => {
@@ -87,7 +88,9 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   }, [query.value])
 
   useEffect(() => {console.log(currentMessage)}, [currentMessage])
-  useEffect(() => {console.log(messages)}, [messages])
+  useEffect(() => {
+    console.log(messages?.filter(message => message.role === 'assistent' || message.role === 'user'))
+  }, [messages])
 
   return (
     <Modal
@@ -95,13 +98,13 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       open={open}
       class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
-        <div class="bg-[#f2f2f2]">
-          { lastUserMessage && <li class="list-none">{lastUserMessage}</li>}
-          { currentMessage && <li class="list-none">truedevbot: {currentMessage}</li>}
-          { messages?.filter(message => message.role === 'assistent' && message.role === 'user').map((message) => (
-            <li class="list-none">{!!message.content ? `${message.role}: ${message.content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
+        <div class="flex flex-col bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
+          { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => (
+            <li class={ `${role === 'user' ? 'justify-self-end' : 'justify-self-start' } list-none` }>{ content ? `${role}: ${content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
           ))}
+          { lastUserMessage && <li class="list-none">user: {lastUserMessage}</li>}
+          { currentMessage && <li class="list-none">assistant: {currentMessage}</li>}
         </div>
         <div class="flex w-full">
           <input 
