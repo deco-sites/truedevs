@@ -1,7 +1,6 @@
 import { useSignal } from "@preact/signals";
 import Modal from "$store/components/ui/Modal.tsx";
 import actionMessageChat from "$store/actions/MessageChat.ts";
-import { AssistentChatProps } from "./index.tsx";
 import { useState, useEffect } from "preact/hooks";
 import Spinner from "deco-sites/truedevs/components/ui/Spinner.tsx";
 import { Suggestion } from "apps/commerce/types.ts";
@@ -9,6 +8,8 @@ import { useSuggestions } from "$store/sdk/useSuggestions.ts";
 import { Resolved } from "deco/engine/core/resolver.ts";
 // import { sendEvent } from "$store/sdk/analytics.tsx";
 import Icon from "deco-sites/truedevs/components/ui/Icon.tsx";
+import type { Props as SearchbarProps } from "$store/components/search/Searchbar.tsx";
+import type { Platform } from "$store/apps/site.ts";
 
 export interface Message {
   role: string
@@ -19,7 +20,39 @@ export interface Message {
 export interface ModalChatProps {
   open: boolean
   apiKey: string
-  loader: Resolved<Suggestion | null>;
+    /**
+   * @title Placeholder
+   * @description Search bar default placeholder message
+   * @default What are you looking for?
+   */
+    placeholder?: string;
+    /**
+    * @title Page path
+    * @description When user clicks on the search button, navigate it to
+    * @default /s
+    */
+    action?: string;
+    /**
+    * @title Term name
+    * @description Querystring param used when navigating the user
+    * @default q
+    */
+    name?: string;
+
+    /**
+    * @title Suggestions Integration
+    * @todo: improve this typings ({query: string, count: number}) => Suggestions
+    */
+    loader: Resolved<Suggestion | null>;
+
+    platform?: Platform;
+}
+
+export interface AssistentChatProps {
+  textInitial: string;
+  apiKey: string;
+  // schemaMessage: SchemaMessageEngine[]
+  engineSuggestion?: SearchbarProps;
 }
 
 function ModalChat({ open, apiKey, loader }: ModalChatProps) {
@@ -90,7 +123,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   )
 }
 
-export default function Chat({ textInitial, apiKey, schemaMessage, engineSuggestion }: AssistentChatProps) {
+export default function Chat({ textInitial, apiKey, engineSuggestion = { loader: { count: 1, resolvedType: '', highlight: ''} } }: AssistentChatProps) {
   const openModal = useSignal(false)
 
   return (
