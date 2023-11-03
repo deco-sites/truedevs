@@ -71,8 +71,9 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     >
       <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
         <div class="bg-[#f2f2f2]">
-          {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
-            <li>{message.role}: {message.content}</li>
+          { currentMessage && <li class="list-none">truedevbot: {currentMessage}</li>}
+          {messages?.filter(message => !message.isPrompt && message.role === 'assistent').map((message) => (
+            <li class="list-none">{message.role}: {message.content}</li>
           ))}
         </div>
         <div class="flex w-full">
