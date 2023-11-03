@@ -20,24 +20,6 @@ export interface Message {
 export interface ModalChatProps {
   open: boolean
   apiKey: string
-    /**
-   * @title Placeholder
-   * @description Search bar default placeholder message
-   * @default What are you looking for?
-   */
-    placeholder?: string;
-    /**
-    * @title Page path
-    * @description When user clicks on the search button, navigate it to
-    * @default /s
-    */
-    action?: string;
-    /**
-    * @title Term name
-    * @description Querystring param used when navigating the user
-    * @default q
-    */
-    name?: string;
 
     /**
     * @title Suggestions Integration
