@@ -55,6 +55,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const query = useSignal('')
   const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const [lastUserMessage, setLastUserMessage] = useState<string | null>(null)
   
   const { setQuery, payload, loading } = useSuggestions(loader);
   const { products = [], searches = [] } = payload.value ?? {};
@@ -71,6 +72,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   // setQuery(value); 
 
   async function handleSendMessage() {
+    setLastUserMessage(valueInput.value)
     isLoading.value = true
     const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
     if(response){
@@ -99,8 +101,9 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
           {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
             <li 
               style={{ listStyleImage: `url(${asset("/sprites.svg#MessageIcon")})` }}
-            >{message.content.length !== 0 ? `${message.role}: ${message.content}` : products.length > 0 ? CarouselProducts(products) : ''}</li>
-          ))}
+            >{!!message.content ? `${message.role}: ${message.content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
+          ))}          
+          { lastUserMessage && <li>{lastUserMessage}</li>}
         </div>
         <div class="flex w-full">
           <input 
