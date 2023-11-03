@@ -56,6 +56,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [lastUserMessage, setLastUserMessage] = useState<string | null>(null)
+  const [currentMessage, setCurrentMessage] = useState<string>('')
   
   const { setQuery, payload, loading } = useSuggestions(loader);
   const { products = [], searches = [] } = payload.value ?? {};
@@ -74,12 +75,9 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   async function handleSendMessage() {
     setLastUserMessage(valueInput.value)
     isLoading.value = true
-    const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
-    if(response){
-      setMessages([...response])
-      valueInput.value = ''
-      isLoading.value = false
-    }
+    await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages })
+    valueInput.value = ''
+    isLoading.value = false
   }
 
   useEffect(() => {
@@ -88,7 +86,8 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     }
   }, [query.value])
 
-  useEffect(() => {console.log(products)}, [payload.value])
+  useEffect(() => {console.log(currentMessage)}, [currentMessage])
+  useEffect(() => {console.log(messages)}, [messages])
 
   return (
     <Modal
@@ -96,14 +95,13 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       open={open}
       class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
-        <div class="bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
-          {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
-            <li 
-              style={{ listStyleImage: `url(${asset("/sprites.svg#MessageIcon")})` }}
-            >{!!message.content ? `${message.role}: ${message.content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
-          ))}          
-          { lastUserMessage && <li>{lastUserMessage}</li>}
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
+        <div class="bg-[#f2f2f2]">
+          { lastUserMessage && <li class="list-none">{lastUserMessage}</li>}
+          { currentMessage && <li class="list-none">truedevbot: {currentMessage}</li>}
+          { messages?.filter(message => message.role === 'assistent' && message.role === 'user').map((message) => (
+            <li class="list-none">{!!message.content ? `${message.role}: ${message.content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
+          ))}
         </div>
         <div class="flex w-full">
           <input 
