@@ -55,6 +55,8 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const query = useSignal('')
   const isLoading = useSignal(false)
   const [messages, setMessages] = useState<Message[]>([])
+  const [lastUserMessage, setLastUserMessage] = useState<string | null>(null)
+  const [currentMessage, setCurrentMessage] = useState<string>('')
   
   const { setQuery, payload, loading } = useSuggestions(loader);
   const { products = [], searches = [] } = payload.value ?? {};
@@ -62,13 +64,12 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const hasTerms = Boolean(searches.length); {/* TERMOS SEMELHANTES */}
 
   async function handleSendMessage() {
+    const currentlastUserMessage = valueInput.value
+    setLastUserMessage(currentlastUserMessage)
     isLoading.value = true
-    const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
-    if(response){
-      setMessages([...response])
-      valueInput.value = ''
-      isLoading.value = false
-    }
+    valueInput.value = ''
+    isLoading.value = false
+    await actionMessageChat({ userMessage: currentlastUserMessage , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages, setLastUserMessage })
   }
 
   useEffect(() => {
@@ -77,7 +78,10 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     }
   }, [query.value])
 
-  useEffect(() => {console.log(products)}, [payload.value])
+  useEffect(() => {console.log(currentMessage)}, [currentMessage])
+  useEffect(() => {
+    console.log(messages?.filter(message => message.role === 'assistent' || message.role === 'user'))
+  }, [messages])
 
   return (
     <Modal
@@ -86,12 +90,12 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       class="justify-end items-end"
     >
       <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
-        <div class="bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
-          {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
-            <li 
-              style={{ listStyleImage: `url(${asset("/sprites.svg#MessageIcon")})` }}
-            >{message.content.length !== 0 ? `${message.role}: ${message.content}` : products.length > 0 ? CarouselProducts(products) : ''}</li>
+        <div class="flex flex-col bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
+          { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => (
+            <li class={ `${role === 'user' ? 'justify-self-end' : 'justify-self-start' } list-none` }>{ content ? `${role}: ${content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
           ))}
+          { lastUserMessage && <li class="list-none">user: {lastUserMessage}</li>}
+          { currentMessage && <li class="list-none">assistant: {currentMessage}</li>}
         </div>
         <div class="flex w-full">
           <input 
