@@ -5,10 +5,6 @@ export interface Props {
   apiKey: string
 }
 
-// interface ResultRDStationSuccess {
-//   event_uuid: string
-// }
-
 const messages: Message[] = [
   {
     "role": "system",
