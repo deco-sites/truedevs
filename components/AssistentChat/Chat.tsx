@@ -6,10 +6,7 @@ import Spinner from "deco-sites/truedevs/components/ui/Spinner.tsx";
 import { Suggestion } from "apps/commerce/types.ts";
 import { useSuggestions } from "$store/sdk/useSuggestions.ts";
 import { Resolved } from "deco/engine/core/resolver.ts";
-// import { sendEvent } from "$store/sdk/analytics.tsx";
 import Icon from "deco-sites/truedevs/components/ui/Icon.tsx";
-import type { Props as SearchbarProps } from "$store/components/search/Searchbar.tsx";
-import type { Platform } from "$store/apps/site.ts";
 
 export interface Message {
   role: string
@@ -17,43 +14,17 @@ export interface Message {
   isPrompt?: boolean
 }
 
-export interface ModalChatProps {
-  open: boolean
+export interface ChatProps {
   apiKey: string
-    /**
-   * @title Placeholder
-   * @description Search bar default placeholder message
-   * @default What are you looking for?
+  /**
+   * @title Suggestions Integration
    */
-    placeholder?: string;
-    /**
-    * @title Page path
-    * @description When user clicks on the search button, navigate it to
-    * @default /s
-    */
-    action?: string;
-    /**
-    * @title Term name
-    * @description Querystring param used when navigating the user
-    * @default q
-    */
-    name?: string;
-
-    /**
-    * @title Suggestions Integration
-    * @todo: improve this typings ({query: string, count: number}) => Suggestions
-    */
-    loader: Resolved<Suggestion | null>;
-
-    platform?: Platform;
+  loader?: Resolved<Suggestion | null>;
 }
 
-export interface AssistentChatProps {
-  textInitial: string;
-  apiKey: string;
-  // schemaMessage: SchemaMessageEngine[]
-  engineSuggestion?: SearchbarProps;
-}
+interface ModalChatProps extends ChatProps {
+  open: boolean
+} 
 
 function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const valueInput = useSignal('')
@@ -78,9 +49,11 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   async function handleSendMessage() {
     isLoading.value = true
     const response = await actionMessageChat({ userMessage: valueInput.value , apiKey: apiKey, setQuery })
-    setMessages([...response])
-    valueInput.value = ''
-    isLoading.value = false
+    if(response){
+      setMessages([...response])
+      valueInput.value = ''
+      isLoading.value = false
+    }
   }
 
   useEffect(() => {
@@ -99,7 +72,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     >
       <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed md:bottom-[1rem] md:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
         <div class="bg-[#f2f2f2]">
-          {messages?.filter(message => !message.isPrompt).map((message) => (
+          {messages?.filter(message => !message.isPrompt && message.role === 'assistant').map((message) => (
             <li>{message.role}: {message.content}</li>
           ))}
         </div>
@@ -107,7 +80,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
           <input 
             type="text"
             value={valueInput.value}
-            onChange={({target}) => {valueInput.value = target!.value}}
+            onChange={({currentTarget}) => {valueInput.value = currentTarget!.value}}
             class="border bg-white text-[#181812] flex-shrink-[1] w-full"
             placeholder="Digite sua pergunta..."
           />
@@ -123,7 +96,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   )
 }
 
-export default function Chat({ textInitial, apiKey, engineSuggestion = { loader: { count: 1, resolvedType: '', highlight: ''} } }: AssistentChatProps) {
+export default function Chat({ apiKey, loader }: ChatProps) {
   const openModal = useSignal(false)
 
   return (
@@ -137,7 +110,7 @@ export default function Chat({ textInitial, apiKey, engineSuggestion = { loader:
       <ModalChat
         apiKey={apiKey}
         open={openModal.value}
-        { ...engineSuggestion }
+        loader={loader}
       />
     </>
   )
