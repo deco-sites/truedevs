@@ -7,12 +7,9 @@ import { Suggestion } from "apps/commerce/types.ts";
 import { useSuggestions } from "$store/sdk/useSuggestions.ts";
 import { Resolved } from "deco/engine/core/resolver.ts";
 import Icon from "deco-sites/truedevs/components/ui/Icon.tsx";
-import { asset } from "$fresh/runtime.ts";
 import Slider from "$store/components/ui/Slider.tsx";
 import type { Product } from "apps/commerce/types.ts";
-import ProductCard, {
-  Layout as cardLayout,
-} from "$store/components/product/ProductCard.tsx";
+import ProductCardSuggestion from "$store/components/product/ProductCardSuggestion.tsx";
 
 export interface Message {
   role: string
@@ -32,15 +29,15 @@ interface ModalChatProps extends ChatProps {
   open: boolean
 }
 
-function CarouselProducts(products: Product[]) {
+function carouselProducts(products: Product[]) {
   return (
     <Slider class="carousel">
       {products.map((product, index: number) => (
         <Slider.Item
           index={index}
-          class="carousel-item first:ml-4 last:mr-4 min-w-[200px] max-w-[200px]"
+          class="carousel-item first:ml-4 last:mr-4 min-w-[150px] max-w-[150px]"
         >
-          <ProductCard
+          <ProductCardSuggestion
             product={product}
             index={index}
           />
@@ -62,15 +59,6 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   const { products = [], searches = [] } = payload.value ?? {};
   const hasProducts = Boolean(products.length); {/* PRODUTOS ACHADOS */}
   const hasTerms = Boolean(searches.length); {/* TERMOS SEMELHANTES */}
-  {/* FUNÇÃO QUE EXECUTA O INTELLISENSE SEARCH */}
-  // if (query.value) {
-  //   sendEvent({
-  //     name: "search",
-  //     params: { search_term: value },
-  //   });
-  // }
-  
-  // setQuery(value); 
 
   async function handleSendMessage() {
     const currentlastUserMessage = valueInput.value
@@ -100,11 +88,40 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     >
       <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
         <div class="flex flex-col bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
-          { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => (
-            <li class={ `${role === 'user' ? 'justify-self-end' : 'justify-self-start' } list-none` }>{ content ? `${role}: ${content}` : products?.length > 0 ? CarouselProducts(products) : ''}</li>
+          { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => role === 'user' ? (
+            <div class="flex w-full justify-end pl-2">
+              <li class="list-none">{content}</li>
+            </div>
+          ) : (
+            <div class="flex w-full justify-start pr-2">
+              <li class="list-none">
+                { content ? (
+                  <span class="flex items-center">
+                    <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                    {content}
+                  </span>
+                  ) : products?.length > 0 ? carouselProducts(products) : ''
+                }
+              </li>
+            </div>
           ))}
-          { lastUserMessage && <li class="list-none">user: {lastUserMessage}</li>}
-          { currentMessage && <li class="list-none">assistant: {currentMessage}</li>}
+          { lastUserMessage && (
+            <div class="flex w-full justify-end pl-2">
+              <li class="list-none">{lastUserMessage}</li>
+            </div>
+          )}
+          { currentMessage && (
+            <div class="flex w-full justify-start pr-2">
+              <li class="list-none">
+                <span class="flex items-start">
+                  <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                  <span>
+                    {currentMessage}
+                  </span>
+                </span>
+              </li>
+            </div>
+          )}
         </div>
         <div class="flex w-full">
           <input 
