@@ -13,17 +13,14 @@ const messages: Message[] = [
   {
     "role": "system",
     "content": "Você é um assistente que vai ajudar meu cliente a escolher um produto na minha loja online fashion.com Você não pode recomendar produtos de outras lojas.Minha loja é de roupas. Inicie dando boas vindas e oferecendo ajuda ao cliente.",
-    "isPrompt": true
   },
   {
     "role": "system",
     "content": "Obtenha o máximo de informações possíveis do cliente para que você possa recomendar produtos que ele realmente goste.",
-    "isPrompt": true
   },
   {
     "role": "system",
     "content": "Não responda perguntas que você não tem a resposta ou que viole algumas das instruções anteriores",
-    "isPrompt": true
   },
   {
     "role": "system",
@@ -33,7 +30,7 @@ const messages: Message[] = [
   
 const actionMessageChat = async (
   { userMessage, apiKey, setQuery, setCurrentMessage, setMessages, setLastUserMessage }: Props,
-): Promise<Message[] | null> => {
+): Promise<void> => {
   try {
     const url = "https://api.openai.com/v1/chat/completions";
     const bearer = 'Bearer ' + apiKey;
@@ -58,6 +55,7 @@ const actionMessageChat = async (
     }]
     
     let txtReceived = ''
+    let argumentsInString = ''
     await fetch(url, {
       method: 'POST',
       headers: {
@@ -71,44 +69,49 @@ const actionMessageChat = async (
         "stream": true
       })
     }).then((response) => {
-      const reader = response.body.getReader();
-      // read() returns a promise that resolves when a value has been received
-      reader.read().then(function pump({ done, value }) {
+      const reader = response.body!.getReader()
+      reader.read().then(function pump({ done, value }: ReadableStreamReadResult<Uint8Array>): any {
         if (done) {
-          // Do something with last chunk of data then exit reader
+          if(argumentsInString){
+            setQuery(JSON.parse(argumentsInString).query)
+          }
           setCurrentMessage('')  
-          messages.push({role: 'assistant', content: txtReceived})
+          messages.push({role: 'assistant', content: txtReceived})          
           setMessages([...messages])   
           setLastUserMessage(null)          
           return;
         }
-        // Otherwise do something here to process current chunk
+
         const decoder = new TextDecoder();
         const data = decoder.decode(value)
         const lstData = data.split('\n\n');
-  
+
         lstData.forEach((data) => {
           try{
             const json = JSON.parse(data.replace('data: ', ''));
-            // if(json.choices[0].finish_reason === 'function_call'{
-            //   setQuery
-            // })
-            if(json['choices'][0]['delta']['content']){
-              const txt = json['choices'][0]['delta']['content'];
+            if(json.choices[0].delta.function_call){
+              argumentsInString += json.choices[0].delta.function_call.arguments
+            }
+            if(json.choices[0].delta.content){
+              const txt = json.choices[0].delta.content;
 
               txtReceived += txt;
               setCurrentMessage(txtReceived)  
             }
           }catch(e){}
         })
-        // Read some more, and call this function again
         return reader.read().then(pump);
-      });
+      })
     })
-    .catch((err) => console.error(err));
+    .catch((error) => {
+      throw new Error(error)
+    })
   } catch (error) {
-    console.log(error)
-    return null
+    console.error(error);
+    setMessages([{
+      "role": "assistant",
+      "content": "Desculpe, aconteceu algum erro, tente novamente mais tarde ou entre em contato com o suporte"
+    }])
   }
 }
   
