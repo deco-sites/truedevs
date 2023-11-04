@@ -4,6 +4,8 @@
 
 import * as $$$0 from "./loaders/Layouts/ProductCard.tsx";
 import * as $$$1 from "./loaders/List/Sections.tsx";
+import * as $$$2 from "./loaders/MessageChat.ts";
+import * as $$$3 from "./loaders/StreamResponseChatGPT.ts";
 import * as $$$$$$0 from "./sections/Category/CategoryBanner.tsx";
 import * as $$$$$$1 from "./sections/Category/CategoryList.tsx";
 import * as $$$$$$2 from "./sections/ChatAssistant/ChatAssistant.tsx";
@@ -47,6 +49,8 @@ const manifest = {
   "loaders": {
     "deco-sites/truedevs/loaders/Layouts/ProductCard.tsx": $$$0,
     "deco-sites/truedevs/loaders/List/Sections.tsx": $$$1,
+    "deco-sites/truedevs/loaders/MessageChat.ts": $$$2,
+    "deco-sites/truedevs/loaders/StreamResponseChatGPT.ts": $$$3,
   },
   "sections": {
     "deco-sites/truedevs/sections/Category/CategoryBanner.tsx": $$$$$$0,
