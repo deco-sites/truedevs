@@ -33,7 +33,7 @@ const actionMessageChat = async (
 ): Promise<void> => {
   try {
     const url = "https://api.openai.com/v1/chat/completions";
-    const bearer = 'Bearer ' + apiKey;
+    const bearer = 'Bearer ' + apiKey.split('_').join('');
     
     messages.push({
       "role": "user",
