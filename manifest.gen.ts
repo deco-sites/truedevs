@@ -40,6 +40,7 @@ import * as $$$$$$32 from "./sections/Product/ProductShelfTabbed.tsx";
 import * as $$$$$$33 from "./sections/Links/Shortcuts.tsx";
 import * as $$$$$$34 from "./sections/Links/LinkTree.tsx";
 import * as $$$$$$$$$0 from "./actions/MessageChat.ts";
+import * as $$$$$$$$$1 from "./actions/contains.ts";
 import * as $$$$$$$$$$$0 from "./apps/site.ts";
 import * as $$$$$$$$$$$1 from "./apps/decohub.ts";
 
@@ -86,6 +87,7 @@ const manifest = {
     "deco-sites/truedevs/sections/Theme/Theme.tsx": $$$$$$10,
   },
   "actions": {
+    "deco-sites/truedevs/actions/contains.ts": $$$$$$$$$1,
     "deco-sites/truedevs/actions/MessageChat.ts": $$$$$$$$$0,
   },
   "apps": {

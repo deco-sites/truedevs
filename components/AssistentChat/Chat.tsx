@@ -74,7 +74,7 @@ function ModalChat({ open, apiKey = 'sk-0CmvRB5jHH183FqWoh4QT3BlbkFJj5mr8vnMmnSA
     })
   }
 
-  useEffect(() => {console.log(products)},[products])
+  useEffect(() => {console.log(products, searches)},[products])
 
   return (
     <Modal
