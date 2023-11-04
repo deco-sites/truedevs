@@ -14,7 +14,6 @@ import ProductCardSuggestion from "$store/components/product/ProductCardSuggesti
 export interface Message {
   role: string
   content: string
-  isPrompt?: boolean
 }
 
 export interface ChatProps {
@@ -22,7 +21,8 @@ export interface ChatProps {
   /**
    * @title Suggestions Integration
    */
-  loader?: Resolved<Suggestion | null>;
+  loader: Resolved<Suggestion | null>;
+  messagesPrompt: Message[]
 }
 
 interface ModalChatProps extends ChatProps {
@@ -47,7 +47,7 @@ function carouselProducts(products: Product[]) {
   )
 }
 
-function ModalChat({ open, apiKey, loader }: ModalChatProps) {
+function ModalChat({ open, apiKey, loader, messagesPrompt }: ModalChatProps) {
   const valueInput = useSignal('')
   const query = useSignal('')
   const isLoading = useSignal(false)
@@ -57,8 +57,6 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   
   const { setQuery, payload, loading } = useSuggestions(loader);
   const { products = [], searches = [] } = payload.value ?? {};
-  const hasProducts = Boolean(products.length); {/* PRODUTOS ACHADOS */}
-  const hasTerms = Boolean(searches.length); {/* TERMOS SEMELHANTES */}
 
   async function handleSendMessage() {
     const currentlastUserMessage = valueInput.value
@@ -66,19 +64,17 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
     isLoading.value = true
     valueInput.value = ''
     isLoading.value = false
-    await actionMessageChat({ userMessage: currentlastUserMessage , apiKey: apiKey, setQuery, setCurrentMessage: setCurrentMessage, setMessages, setLastUserMessage })
+    await actionMessageChat({ 
+      userMessage: currentlastUserMessage, 
+      apiKey: apiKey,
+       setQuery,
+       setCurrentMessage,
+       setMessages,
+       setLastUserMessage,
+    })
   }
 
-  useEffect(() => {
-    if(query.value) {
-      setQuery(query.value)
-    }
-  }, [query.value])
-
-  useEffect(() => {console.log(currentMessage)}, [currentMessage])
-  useEffect(() => {
-    console.log(messages?.filter(message => message.role === 'assistent' || message.role === 'user'))
-  }, [messages])
+  useEffect(() => {console.log(products)},[products])
 
   return (
     <Modal
@@ -86,35 +82,67 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       open={open}
       class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-xl bg-[#f2f2f2]">
         <div class="flex flex-col bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
           { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => role === 'user' ? (
             <div class="flex w-full justify-end pl-2">
-              <li class="list-none">{content}</li>
+              <li class="list-none">
+                <span class="flex items-start">
+                  <Icon class="mr-2" id="Message" width={40} height={25} strokeWidth={30} />
+                  <span>
+                    {content}
+                  </span>
+                </span>
+              </li>
             </div>
           ) : (
             <div class="flex w-full justify-start pr-2">
               <li class="list-none">
                 { content ? (
-                  <span class="flex items-center">
-                    <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
-                    {content}
+                  <span class="flex">
+                    <span class="w-10">
+                      <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                    </span>
+                    <span>
+                      {content}
+                    </span>
                   </span>
-                  ) : products?.length > 0 ? carouselProducts(products) : ''
+                  ) : products?.length > 0 ? (
+                    <>
+                      <span class="flex">
+                        <span class="w-10">
+                          <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                        </span>
+                        <span>
+                          Encontrei estes produtos para você
+                        </span>
+                      </span>
+                    <>{ carouselProducts(products) }</>
+                    </>
+                  ) : ""
                 }
               </li>
             </div>
           ))}
           { lastUserMessage && (
             <div class="flex w-full justify-end pl-2">
-              <li class="list-none">{lastUserMessage}</li>
+              <li class="list-none">
+                <span class="flex items-start">
+                    <Icon class="mr-2" id="Message" width={40} height={25} strokeWidth={30} />
+                    <span>
+                      {lastUserMessage}
+                    </span>
+                  </span>                
+              </li>
             </div>
           )}
           { currentMessage && (
             <div class="flex w-full justify-start pr-2">
               <li class="list-none">
-                <span class="flex items-start">
-                  <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                <span class="flex">
+                  <span class="w-10">
+                    <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                  </span>
                   <span>
                     {currentMessage}
                   </span>
@@ -143,7 +171,7 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
   )
 }
 
-export default function Chat({ apiKey, loader }: ChatProps) {
+export default function Chat(props: ChatProps) {
   const openModal = useSignal(false)
 
   return (
@@ -155,9 +183,8 @@ export default function Chat({ apiKey, loader }: ChatProps) {
         <Icon id="Message" size={40} />
       </button>
       <ModalChat
-        apiKey={apiKey}
+        {...props}
         open={openModal.value}
-        loader={loader}
       />
     </>
   )

@@ -8,7 +8,7 @@ import * as $$1 from "./islands/AddToCartButton/shopify.tsx";
 import * as $$2 from "./islands/AddToCartButton/vnda.tsx";
 import * as $$3 from "./islands/AddToCartButton/vtex.tsx";
 import * as $$4 from "./islands/AddToCartButton/wake.tsx";
-import * as $$5 from "./islands/AssistentChat.tsx";
+import * as $$5 from "./islands/AssistantChat.tsx";
 import * as $$6 from "./islands/Header/Buttons.tsx";
 import * as $$7 from "./islands/Header/Cart/linx.tsx";
 import * as $$8 from "./islands/Header/Cart/shopify.tsx";
@@ -35,7 +35,7 @@ const manifest = {
     "./islands/AddToCartButton/vnda.tsx": $$2,
     "./islands/AddToCartButton/vtex.tsx": $$3,
     "./islands/AddToCartButton/wake.tsx": $$4,
-    "./islands/AssistentChat.tsx": $$5,
+    "./islands/AssistantChat.tsx": $$5,
     "./islands/Header/Buttons.tsx": $$6,
     "./islands/Header/Cart/linx.tsx": $$7,
     "./islands/Header/Cart/shopify.tsx": $$8,
