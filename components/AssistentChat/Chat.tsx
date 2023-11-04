@@ -86,18 +86,18 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
       open={open}
       class="justify-end items-end"
     >
-      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-2xl bg-[#f2f2f2]">
+      <div class="flex flex-col w-full sm:w-[400px] h-full sm:h-[460px] fixed sm:bottom-[1rem] sm:right-[1rem] z-[99] m-4 overflow-hidden rounded-xl bg-[#f2f2f2]">
         <div class="flex flex-col bg-[#f2f2f2] modalChat sm:min-h-[404px] sm:max-h-[404px] overflow-y-auto p-4 pb-0">
           { messages?.filter(({ role }) => role === 'assistant' || role === 'user').map(({role, content}) => role === 'user' ? (
-            <div class="flex w-full items-end">
-              <li class="list-none">{`${role}: ${content}`}</li>
+            <div class="flex w-full justify-end pl-2">
+              <li class="list-none">{content}</li>
             </div>
           ) : (
-            <div class="flex w-full items-start">
+            <div class="flex w-full justify-start pr-2">
               <li class="list-none">
                 { content ? (
                   <span class="flex items-center">
-                    <Icon id="MessageIcon" size={20} />
+                    <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
                     {content}
                   </span>
                   ) : products?.length > 0 ? carouselProducts(products) : ''
@@ -106,13 +106,20 @@ function ModalChat({ open, apiKey, loader }: ModalChatProps) {
             </div>
           ))}
           { lastUserMessage && (
-            <div class="flex w-full items-end">
-              <li class="list-none">user: {lastUserMessage}</li>
+            <div class="flex w-full justify-end pl-2">
+              <li class="list-none">{lastUserMessage}</li>
             </div>
           )}
           { currentMessage && (
-            <div class="flex w-full items-start">
-              <li class="list-none">assistant: {currentMessage}</li>
+            <div class="flex w-full justify-start pr-2">
+              <li class="list-none">
+                <span class="flex items-start">
+                  <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                  <span>
+                    {currentMessage}
+                  </span>
+                </span>
+              </li>
             </div>
           )}
         </div>
