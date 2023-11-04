@@ -47,7 +47,7 @@ function carouselProducts(products: Product[]) {
   )
 }
 
-function ModalChat({ open, apiKey, loader, messagesPrompt }: ModalChatProps) {
+function ModalChat({ open, apiKey = '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', loader, messagesPrompt }: ModalChatProps) {
   const valueInput = useSignal('')
   const query = useSignal('')
   const isLoading = useSignal(false)
