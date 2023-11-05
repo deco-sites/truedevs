@@ -36,7 +36,6 @@ const actionMessageChat = async (
   { userMessage, apiKey, setQuery, setCurrentMessage, setMessages, setLastUserMessage }: Props,
 ): Promise<void> => {
   try {
-    console.log(randomString(DEFAULT_STRING, apiKey.split('_').join('')), DEFAULT_STRING)
     const url = "https://api.openai.com/v1/chat/completions";
     const bearer = 'Bearer ' + randomString(DEFAULT_STRING, apiKey.split('_').join(''));
     

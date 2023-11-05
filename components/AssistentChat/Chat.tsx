@@ -74,8 +74,6 @@ function ModalChat({ open, apiKey, loader, messagesPrompt }: ModalChatProps) {
     })
   }
 
-  useEffect(() => {console.log(products, searches)},[products])
-
   return (
     <Modal
       onClose={() => {open = false}}
