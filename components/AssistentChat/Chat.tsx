@@ -117,7 +117,16 @@ function ModalChat({ open, apiKey, loader, messagesPrompt }: ModalChatProps) {
                       </span>
                     <>{ carouselProducts(products) }</>
                     </>
-                  ) : ""
+                  ) : !loading.value && (
+                      <span class="flex">
+                        <span class="w-10">
+                          <Icon class="mr-2" id="MessageIcon" width={40} height={25} strokeWidth={30} />
+                        </span>
+                        <span>
+                          Desculpe, não encontrei o produto que você procura :(
+                        </span>
+                      </span>
+                    )
                 }
               </li>
             </div>
