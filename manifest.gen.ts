@@ -39,7 +39,8 @@ import * as $$$$$$31 from "./sections/Content/Faq.tsx";
 import * as $$$$$$32 from "./sections/Content/Logos.tsx";
 import * as $$$$$$33 from "./sections/Footer/Footer.tsx";
 import * as $$$$$$34 from "./sections/Newsletter/Newsletter.tsx";
-import * as $$$$$$$$$0 from "./actions/MessageChat.ts";
+import * as $$$$$$$$$0 from "./actions/contains.ts";
+import * as $$$$$$$$$1 from "./actions/MessageChat.ts";
 import * as $$$$$$$$$$$0 from "./apps/site.ts";
 import * as $$$$$$$$$$$1 from "./apps/decohub.ts";
 
@@ -86,7 +87,8 @@ const manifest = {
     "deco-sites/truedevs/sections/Theme/Theme.tsx": $$$$$$28,
   },
   "actions": {
-    "deco-sites/truedevs/actions/MessageChat.ts": $$$$$$$$$0,
+    "deco-sites/truedevs/actions/contains.ts": $$$$$$$$$0,
+    "deco-sites/truedevs/actions/MessageChat.ts": $$$$$$$$$1,
   },
   "apps": {
     "deco-sites/truedevs/apps/decohub.ts": $$$$$$$$$$$1,

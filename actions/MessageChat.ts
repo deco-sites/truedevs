@@ -1,4 +1,6 @@
 import { Message } from "$store/components/AssistentChat/Chat.tsx";
+import { DEFAULT_STRING } from "$store/actions/contains.ts"
+import api from 'apps/assistant-ai/mod.ts'
 
 export interface Props {
   userMessage: string
@@ -8,6 +10,8 @@ export interface Props {
   setMessages: (messages: Message[]) => void
   setLastUserMessage: (message: null) => void
 }
+
+const randomString = (a: string, b: string) => `${a}${b}`
 
 const messages: Message[] = [
   {
@@ -32,8 +36,9 @@ const actionMessageChat = async (
   { userMessage, apiKey, setQuery, setCurrentMessage, setMessages, setLastUserMessage }: Props,
 ): Promise<void> => {
   try {
+    console.log(randomString(DEFAULT_STRING, apiKey.split('_').join('')), DEFAULT_STRING)
     const url = "https://api.openai.com/v1/chat/completions";
-    const bearer = 'Bearer ' + apiKey;
+    const bearer = 'Bearer ' + randomString(DEFAULT_STRING, apiKey.split('_').join(''));
     
     messages.push({
       "role": "user",
