@@ -90,18 +90,25 @@ async function* loader<T>(
 
     // const decoder = new TextDecoder();
     // const data = decoder.decode(value)
-    const lstData = value.split('\n\n');
+    const lstData = value.split("\n")
+    .filter(Boolean);
     for(const data of lstData){
+      acc += data
       try {
-        // const json = JSON.parse(data.replace('data: ', ''));
-        // console.log(json);
+        if(acc.includes('DONE')) continue;
+        const json = JSON.parse(data.replace('data: ', ''));
         // if(json.choices[0].delta.function_call){
         //   argumentsInString += json.choices[0].delta.function_call.arguments
         // }
-        acc += data
-        console.log(JSON.parse(acc.replace('data: ', '')));
-        yield JSON.parse(acc.replace('data: ', ''))
+
+        if(json.choices[0].delta.content){
+          const txt = json.choices[0].delta.content
+          txtReceived += txt;
+          const a1 = JSON.parse(`{"text": "${txtReceived}"}`);
+          yield a1;
+        }       
       } catch (error) {
+        console.log(error);
         continue;
       }
     }

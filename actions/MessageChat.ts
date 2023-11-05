@@ -13,11 +13,11 @@ export interface Props {
 
   
 const actionMessageChat = async (
-  { userMessage, apiKey }: Props,
+  { userMessage }: Props,
 ): Promise<void> => {
-  console.log('actionMessageChat', { userMessage, apiKey });
+  console.log('actionMessageChat', { userMessage });
   try {
-    const result = await invoke["deco-sites/truedevs"].loaders.MessageChat({ stream:true, userMessage, apiKey })
+    const result = await invoke.apps['assistant-ai'].loaders.MessageChat({ stream:true, userMessage })
     console.log('result', result);
     if (isEventStreamResponse(result)) {
       console.log(result);
@@ -25,7 +25,7 @@ const actionMessageChat = async (
       //   console.log(onmessage);
       // }
     }
-  } catch (error) { console.log(error)}
+  } catch (error) { console.log(error) }
 }
   
 export default actionMessageChat;
