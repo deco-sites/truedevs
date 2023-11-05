@@ -16,14 +16,16 @@ const actionMessageChat = async (
   { userMessage, apiKey }: Props,
 ): Promise<void> => {
   console.log('actionMessageChat', { userMessage, apiKey });
-  const result = await invoke["deco-sites/truedevs"].loaders.MessageChat({ stream:true, userMessage, apiKey })
-  console.log('result', result);
-  if (isEventStreamResponse(result)) {
-    console.log(result);
-    // for await (onmessage of result) {
-    //   console.log(onmessage);
-    // }
-  }
+  try {
+    const result = await invoke["deco-sites/truedevs"].loaders.MessageChat({ stream:true, userMessage, apiKey })
+    console.log('result', result);
+    if (isEventStreamResponse(result)) {
+      console.log(result);
+      // for await (onmessage of result) {
+      //   console.log(onmessage);
+      // }
+    }
+  } catch (error) { console.log(error)}
 }
   
 export default actionMessageChat;

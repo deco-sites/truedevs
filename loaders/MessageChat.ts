@@ -99,8 +99,8 @@ async function* loader<T>(
         //   argumentsInString += json.choices[0].delta.function_call.arguments
         // }
         acc += data
-        console.log(acc);
-        yield JSON.parse(acc)
+        console.log(JSON.parse(acc.replace('data: ', '')));
+        yield JSON.parse(acc.replace('data: ', ''))
       } catch (error) {
         continue;
       }
